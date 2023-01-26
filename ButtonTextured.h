@@ -68,7 +68,7 @@ public:
         const std::shared_ptr<SDL_Point> clipRectDimensions = nullptr);
     
     // Handle any events
-    void handleEvent(SDL_Event* bEvent);
+    void handleEvent(SDL_Event& bEvent, const SDL_Rect& viewPort = { 0, 0, 0, 0 });
 };
 
 #endif

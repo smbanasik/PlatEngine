@@ -29,6 +29,8 @@ protected:
     bool isHighlighted;
     // Visual click, turned off when mouse visually stops clicking
     bool isClicked;
+    // Frame independent click, is only turned off when action function has been resolved
+    bool signalClick;
 
     // Used to separate the rendering of the colors from the other things
     virtual void renderColors() = 0;
@@ -82,16 +84,17 @@ public:
     virtual int getHeight() = 0;
 
     // Get if button has been clicked
-    virtual bool getIsClicked();
+    virtual bool getSignalClick();
+    virtual void resetSignalClick();
 
-    // Set the label
-    void setLabel(TTF_Font* font, const Uint32& wrap);
+    // Load the label texture
+    void loadLabel(TTF_Font* font, const Uint32& wrap);
 
     // Render the button
     virtual void render() = 0;
 
     // Handle any events
-    virtual void handleEvent(SDL_Event* bEvent) = 0;
+    virtual void handleEvent(SDL_Event& bEvent, const SDL_Rect& viewPort = { 0, 0, 0, 0 });
 
     // Handles every button event.
     //static void buttonEvents(SDL_Event* bEvent);

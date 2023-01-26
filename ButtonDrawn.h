@@ -51,7 +51,7 @@ public:
         const std::string& labelText, const SDL_Color labelColor);
 
     // Handle any events
-    void handleEvent(SDL_Event* bEvent);
+    void handleEvent(SDL_Event& bEvent, const SDL_Rect& viewPort = { 0, 0, 0, 0 });
 
 };
 

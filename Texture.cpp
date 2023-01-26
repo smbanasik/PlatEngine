@@ -19,9 +19,12 @@ bool Texture::loadFromFile(SDL_Renderer* renderer, const std::string& path) {
     free();
 
     SDL_Texture* newTexture = IMG_LoadTexture(renderer, path.c_str());
+    //SDL_Surface* newSurface = IMG_Load(path.c_str());
+    //SDL_Texture* newTexture = SDL_CreateTextureFromSurface(renderer, newSurface);
     if (newTexture == nullptr) {
         std::cout << "Texture could not be loaded at path " << path << "\n" << IMG_GetError();
     }
+    SDL_QueryTexture(newTexture, NULL, NULL, &width, &height);
     texture = newTexture;
     return texture != nullptr;
 }

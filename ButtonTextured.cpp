@@ -1,5 +1,8 @@
 #include "ButtonTextured.h"
 
+// Temporary
+#include <iostream>
+
 // PROTECTED
 
 // Used to separate the rendering of the colors from the other things
@@ -13,7 +16,7 @@ void ButtonTextured::renderColors() {
     int x = 0, y = 0;
 
     // If it's configured that we're stacking our sprite sheet vertically, we offset our y coord
-    if (buttonParams & (ButtonParams::YCLIP | ButtonParams::VERTICAL)) {
+    if (buttonParams == (ButtonParams::YCLIP | ButtonParams::VERTICAL)) {
 
         // Offset by 1
         if (isHighlighted == true)
@@ -26,7 +29,7 @@ void ButtonTextured::renderColors() {
     }
     
     // If it's configured that we're stacking our sprite sheet horizontally, we offset our x coord
-    if (buttonParams & (ButtonParams::YCLIP | ButtonParams::HORIZONTAL)) {
+    if (buttonParams == (ButtonParams::YCLIP | ButtonParams::HORIZONTAL)) {
 
         // Offset by 1
         if (isHighlighted == true)
@@ -158,58 +161,61 @@ void ButtonTextured::initButton(const SDL_Point& buttonPos, const std::shared_pt
     this->clipRectDimensions = clipRectDimensions;
 }
 
-void ButtonTextured::handleEvent(SDL_Event* bEvent) {
+// Handle any events
+void ButtonTextured::handleEvent(SDL_Event& bEvent, const SDL_Rect& viewPort) {
+    Button::handleEvent(bEvent, viewPort);
+}
+
+/*
+void ButtonTextured::handleEvent(SDL_Event& bEvent, const SDL_Rect& viewPort) {
     // Mouse event and button is rendered
-    if ((bEvent->type == SDL_MOUSEMOTION || bEvent->type == SDL_MOUSEBUTTONDOWN || bEvent->type == SDL_MOUSEBUTTONUP)
+    if ((bEvent.type == SDL_MOUSEMOTION || bEvent.type == SDL_MOUSEBUTTONDOWN || bEvent.type == SDL_MOUSEBUTTONUP)
         && buttonIsRendered == true) {
-        //int x, y;
-        // Depending on the viewport that the button is in, get coords relative to the viewport
-        //ViewPort::vpList[buttonViewPort].getVPMouseCoords(x, y);
-        // Temp code for testing our getVPMouseCoords button
-        //ViewPort temp = ViewPort::vpList[buttonViewPort];
+        
+        // Grab mouse coords
         int mX, mY;
         SDL_GetMouseState(&mX, &mY);
-        //std::cout << "VX: " << temp.getViewPort().x << " VY: " << temp.getViewPort().y << std::endl;
-        //std::cout << "MX: " << mX << " MY: " << mY << std::endl;
-        //std::cout << " X: " << x << "  Y: " << y << std::endl;
+        // Math sanity check
+        // To right of viewport start mX = 100 - 50 = 50
+        // To left of viewport start mX = 49 - 50 = -1
+        // If viewport is 0,0, there's no offset, uses screen cords.
+        // If button has a viewport, scope is the viewport. No concern if mouse is off viewports right edge
+        // Account for viewport
+        mX = mX - viewPort.x;
+        mY = mY - viewPort.y;
 
-        //SDL_GetMouseState(&x, &y); // We need to add an offset depending on the viewport.
+        // Reset vars
         isHighlighted = true;
+        isClicked = false;
+
         // Mouse left of button
-        if (mX < buttonPos.x) {
+        if (mX < this->getX()) {
             isHighlighted = false;
         }
         // Mouse right of button
-        else if (mX > buttonPos.x + this->getWidth()) {
+        else if (mX > this->getX() + this->getWidth()) {
 
             isHighlighted = false;
         }
         // Mouse above button
-        else if (mY < buttonPos.y) {
+        else if (mY < this->getY()) {
 
             isHighlighted = false;
         }
         // Mouse below button
-        else if (mY > buttonPos.y + this->getHeight()) {
+        else if (mY > this->getY() + this->getHeight()) {
 
             isHighlighted = false;
         }
 
-        if (isHighlighted == true) {
+        if (isHighlighted == true)
+            return;
 
-            if (bEvent->type == SDL_MOUSEBUTTONDOWN) {
+        if (bEvent.type == SDL_MOUSEBUTTONDOWN) {
 
-                isClicked = true;
-            }
-            else {
-
-                isClicked = false;
-            }
-        }
-        else {
-
-            isClicked = false;
+            isClicked = true;
+            signalClick = true;
         }
 
     }
-}
+}*/

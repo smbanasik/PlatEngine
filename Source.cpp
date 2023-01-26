@@ -4,7 +4,8 @@
 // Scope:
 // Create a window ./
 // Create a button class ./
-// Create a menu system
+// Create a menu system ./
+// Create a main menu that can access the game or options ./
 // Create an options menu & config file
 // Create an entity system
 // Create 3 types of blocks: solid, stair, platform
@@ -24,71 +25,27 @@
 #include "GameWindow.h"
 #include "Button.h"
 #include "ButtonDrawn.h"
+#include "ButtonTextured.h"
+#include "Menu.h"
+#include "MenuController.h"
+#include "GameController.h"
 
-//Screen dimension constants
-const int SCREEN_WIDTH = 1280;
-const int SCREEN_HEIGHT = 720;
-
-void initLibs();
-void close(GameWindow& window, SDL_Renderer* renderer);
 
 int main(int argc, char* args[]) {
     
-    initLibs();
+    GameController::initLibs();
     GameWindow platWin;
     SDL_Renderer* gameRenderer = nullptr;
     SDL_Event winEvent;
 
-    // Temporary lol
-    std::string gameName = "PlatWin";
-    bool quitGame = false;
-
-    platWin.init(gameName, SCREEN_WIDTH, SCREEN_HEIGHT);
+    platWin.init(GameController::gameName, GameController::screenResolution.x, GameController::screenResolution.y);
     gameRenderer = platWin.constructRenderer();
 
-    while (!quitGame) {
+    GameController::initClasses(gameRenderer);
 
-        while (SDL_PollEvent(&winEvent) != 0) {
-            if (winEvent.type == SDL_QUIT) {
-                quitGame = true;
-            }
+    GameController::gameLoop(platWin, gameRenderer, winEvent);
 
-            platWin.handleEvent(gameRenderer, winEvent);
-        }
-
-        // Get mouse state
-        int mX, mY;
-        SDL_GetMouseState(&mX, &mY);
-
-        // Draw background
-        SDL_SetRenderDrawColor(gameRenderer, 0x11, 0x11, 0x11, 0xFF);
-        SDL_RenderClear(gameRenderer);
-        
-        // Draw square on mouse
-        SDL_SetRenderDrawColor(gameRenderer, 0xFF, 0x00, 0xAA, 0xFF);
-        SDL_Rect temp = { mX - 10, mY - 10, 20, 20 };
-        SDL_RenderFillRect(gameRenderer, &temp);
-        SDL_RenderPresent(gameRenderer);
-    }
-
-    close(platWin, gameRenderer);
+    GameController::close(platWin, gameRenderer);
 
     return 0;
-}
-
-void initLibs() {
-    SDL_Init(SDL_INIT_VIDEO);
-    IMG_Init(IMG_INIT_PNG);
-    TTF_Init();
-}
-
-void close(GameWindow& window, SDL_Renderer* renderer) {
-
-    window.free();
-    SDL_DestroyRenderer(renderer);
-    renderer = nullptr;
-
-    IMG_Quit();
-    TTF_Quit();
-    SDL_Quit();
 }
